@@ -44,3 +44,27 @@ func doPrime(c pb.CalculatorServiceClient, n int32) error {
 	fmt.Println()
 	return nil
 }
+
+func doAvg(c pb.CalculatorServiceClient, nums ...int32) error {
+	cl, err := c.Avg(context.Background())
+	if err != nil {
+		log.Println("Avg request error:", err)
+		return err
+	}
+	for _, num := range nums {
+		err = cl.Send(&pb.AvgRequest{
+			Num: num,
+		})
+		if err != nil {
+			log.Println("Avg request error:", err)
+			return err
+		}
+	}
+
+	res, err := cl.CloseAndRecv()
+	if err != nil {
+		return err
+	}
+	fmt.Println("The avg is:", res.GetAvg())
+	return nil
+}
