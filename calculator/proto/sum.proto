@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package grpc_project;
+
+option go_package = "github.com/lamtruong9x/grpc_project/calculator/proto";
+
+message SumRequest {
+    double a = 1;
+    double b = 2;
+}
+
+message SumResponse {
+    double sum = 1;
+}
+
+service SumService {
+    rpc Sum(SumRequest) returns (SumResponse);
+}
