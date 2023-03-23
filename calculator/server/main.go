@@ -11,7 +11,7 @@ import (
 const addr string = "localhost:50123"
 
 type Calculator struct {
-	pb.SumServiceServer
+	pb.CalculatorServiceServer
 }
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 	log.Printf("Listening on port %v", addr)
 	s := grpc.NewServer()
-	pb.RegisterSumServiceServer(s, &Calculator{})
+	pb.RegisterCalculatorServiceServer(s, &Calculator{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatal(err)
 	}
