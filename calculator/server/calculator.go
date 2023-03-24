@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log"
+	"math"
 
 	pb "github.com/lamtruong9x/grpc_project/calculator/proto"
 )
@@ -93,4 +95,27 @@ func avg(intStream <-chan int) <-chan float64 {
 		result <- (float64(sum) / float64(i))
 	}()
 	return result
+}
+
+func (c *Calculator) Max(stream pb.CalculatorService_MaxServer) error {
+	var max = math.Inf(-1)
+	for {
+		req, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return nil
+			}
+			return err
+		}
+		temp := float64(req.GetNum())
+		if temp > max {
+			max = temp
+		}
+
+		err = stream.Send(&pb.MaxResponse{Max: int32(max)})
+		if err != nil {
+			log.Println("Cannot send response")
+			return err
+		}
+	}
 }

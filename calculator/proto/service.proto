@@ -5,6 +5,7 @@ package calculator;
 import "prime.proto";
 import "sum.proto";
 import "avg.proto";
+import "max.proto";
 
 option go_package = "github.com/lamtruong9x/grpc_project/calculator/proto";
 
@@ -12,4 +13,6 @@ service CalculatorService {
     rpc Sum(SumRequest) returns (SumResponse);
     rpc Prime(PrimeRequest) returns (stream PrimeResponse);
     rpc Avg(stream AvgRequest) returns (AvgResponse);
+    rpc Max(stream MaxRequest) returns (stream MaxResponse);
+
 }

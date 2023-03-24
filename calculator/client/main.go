@@ -40,4 +40,8 @@ func main() {
 	if err := doAvg(c, 1, 2, 3, 4, 5, 6, 7, 8, 9); err != nil {
 		log.Println("Sum request error: ", err)
 	}
+
+	if err := doMax(c, 4, 7, 1, 2, 9, 12, 11); err != nil {
+		log.Println("Sum request error: ", err)
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sync"
 
 	pb "github.com/lamtruong9x/grpc_project/calculator/proto"
 	"golang.org/x/net/context"
@@ -66,5 +67,51 @@ func doAvg(c pb.CalculatorServiceClient, nums ...int32) error {
 		return err
 	}
 	fmt.Println("The avg is:", res.GetAvg())
+	return nil
+}
+
+func doMax(c pb.CalculatorServiceClient, nums ...int32) error {
+	var wg = &sync.WaitGroup{}
+
+	wg.Add(2)
+	cl, err := c.Max(context.Background())
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		defer wg.Done()
+		for _, num := range nums {
+			err := cl.Send(&pb.MaxRequest{
+				Num: num,
+			})
+			if err != nil {
+				log.Println("cannot send request due to", err)
+				return
+			}
+		}
+		if err := cl.CloseSend(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		for {
+			res, err := cl.Recv()
+			if err != nil {
+				if errors.Is(err, io.EOF) {
+					break
+				}
+				log.Fatal(err)
+			}
+			if res != nil {
+				fmt.Println("Current max is:", res.GetMax())
+
+			}
+		}
+	}()
+
+	wg.Wait()
 	return nil
 }
