@@ -44,4 +44,12 @@ func main() {
 	if err := doMax(c, 4, 7, 1, 2, 9, 12, 11); err != nil {
 		log.Println("Sum request error: ", err)
 	}
+
+	if err := doSqrt(c, time.Microsecond, 11); err != nil {
+		log.Println("Sum request error: ", err)
+	}
+
+	if err := doSqrt(c, time.Second, -1); err != nil {
+		log.Println("Sum request error: ", err)
+	}
 }

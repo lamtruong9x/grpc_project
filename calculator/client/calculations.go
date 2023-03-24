@@ -6,9 +6,12 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 
 	pb "github.com/lamtruong9x/grpc_project/calculator/proto"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func doSum(c pb.CalculatorServiceClient) error {
@@ -113,5 +116,32 @@ func doMax(c pb.CalculatorServiceClient, nums ...int32) error {
 	}()
 
 	wg.Wait()
+	return nil
+}
+
+func doSqrt(c pb.CalculatorServiceClient, timeout time.Duration, n int32) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	res, err := c.Sqrt(ctx, &pb.SqrtRequest{
+		Num: n,
+	})
+	if err != nil {
+		statusErr, ok := status.FromError(err)
+		if ok {
+			switch statusErr.Code() {
+			case codes.DeadlineExceeded:
+				fmt.Println("Timeout was hit! Deadline was exceeded")
+			case codes.InvalidArgument:
+				fmt.Println("Invalid request data", statusErr.Message())
+			default:
+				fmt.Printf("unexpected error: %v", statusErr)
+			}
+		} else {
+			log.Fatalf("error while calling GreetWithDeadline RPC: %v", err)
+		}
+		return nil
+	}
+	log.Printf("Response from GreetWithDeadline: %v", res.Sqrt)
 	return nil
 }

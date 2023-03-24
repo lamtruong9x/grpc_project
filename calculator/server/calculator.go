@@ -8,6 +8,8 @@ import (
 	"math"
 
 	pb "github.com/lamtruong9x/grpc_project/calculator/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Unary
@@ -118,4 +120,14 @@ func (c *Calculator) Max(stream pb.CalculatorService_MaxServer) error {
 			return err
 		}
 	}
+}
+
+func (c *Calculator) Sqrt(ctx context.Context, in *pb.SqrtRequest) (*pb.SqrtResponse, error) {
+	num := in.GetNum()
+	if num < 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "cannot sqare root negative number: %d", num)
+	}
+	return &pb.SqrtResponse{
+		Sqrt: math.Sqrt(float64(num)),
+	}, nil
 }
